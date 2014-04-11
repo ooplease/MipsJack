@@ -1,51 +1,61 @@
 .data
-
-	deck: .asciiz         "AAAA222233334444555566667777888899991111JJJJQQQQKKKK"
-	shuffledDeck: .asciiz "----------------------------------------------------"
-	
-	player1Hand: .asciiz  "-----------"
-	player2Hand: .asciiz  "-----------"
-	dealerHand:  .asciiz  "-----------"
+	player1: .asciiz "-----------"
+	dealer:  .asciiz "-----------"
+	dealerStand: .word 0
+	player1Stand: .word 0
 
 .text
-.globl main
+.globl blackJack
+.include "Deck.asm"
 
-main:
-	jal shuffle
-	
-	gameLoop:
-	
-
-exit:
-	li $v0,10
-	syscall
-	
-shuffle:
-	li $a1,52
-	li $t3,0
+blackJack:
 	addi $sp,$sp,-4
 	sw $ra,($sp)
-	for1:
-		li $a0,0
-		li $v0,42
-		syscall
-		la $a0,deck($a0)
-		lb $t2,($a0)
-		sb $t2,shuffledDeck($t3)
-		addi $a1,$a1,-1
-		addi $t3,$t3,1
-		jal shiftAllLeft
-		bnez $a1,for1
+	reshuffle:
+		jal shuffle
+	gameLoop:
+		beqz 
+	
+	
+endgame:
+	lw $ra,($sp)
+	addi $sp,$sp,-4
+	jr $ra
+	
+deal:
+	addi $sp,$sp,-4
+	sw $ra,($sp)
+	la $a0,player1
+	li $a1,2
+	jal draw
+	la $a0,dealer
+	li $a1,2
+	jal draw
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
-		
-shiftAllLeft: #$a0 is position to start at
-	while1:
-		lb $t1,1($a0)
-		sb $t1,($a0)
-		addi $a0,$a0,1
-		bnez $t1,while1
-	jr $ra
 	
-getValue: #$a0 and $a1 is the card byte places value into $s0
+dealerTurn:
+	addi $sp,$sp,-4
+	sw $ra,($sp)
+	# If dealer total > 15 or if dealerStand != 0
+	# stand
+	# else if player (total + 6) > dealer total && (total + 6) < 21
+	# hit
+	stand:
+	
+	hit:
+	
+	endDealerTurn:
+		lw $ra,($sp)
+		addi $sp,$sp,4
+		jr $ra
+		
+calculateTotal: # $a0 is the address of the hand $s0 will contain the total
+	while4:
+		lb $t0,($a0)
+		beqz $t0,endwhile4
+		addi $a0,$a0,1
+		
+	endwhile4:
+	
