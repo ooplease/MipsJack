@@ -6,7 +6,6 @@
 
 .text
 .globl blackJack
-.include "Deck.asm"
 
 blackJack:
 	addi $sp,$sp,-4
@@ -14,7 +13,6 @@ blackJack:
 	reshuffle:
 		jal shuffle
 	gameLoop:
-		beqz 
 	
 	
 endgame:

@@ -6,10 +6,8 @@
 	cardsLeft: .word 52
 
 .text
-.globl shuffle
-.globl draw
-.globl remainingCards
-	
+
+.globl shuffle	
 shuffle:
 	li $a1,52
 	li $t3,0
@@ -38,12 +36,13 @@ shiftAllLeft: #$a0 is position to start at
 		bnez $t1,while1
 	jr $ra
 	
+.globl draw
 draw: # $a0 contains the address of the hand where cards will be placed, $a1 contains the # of cards to draw
 	addi $sp,$sp,-4
 	sw $ra,($sp)
 	la $t0,shuffledDeck
 	lw $t2,cardsLeft
-	blt $t2,$a1,error1
+	#blt $t2,$a1,error1
 	for2:
 		beqz $a1,endfor2 #check condition
 		lb $t1,($t0)
@@ -52,7 +51,7 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 		addi $a0,$a0,1
 		j for2
 	endfor2:
-	lw $ra,(sp)
+	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
 
@@ -67,7 +66,7 @@ shuffleDiscards:
 	li $t3,0
 	addi $sp,$sp,-4
 	sw $ra,($sp)
-	for1:
+	for3:
 		li $a0,0
 		li $v0,42
 		syscall
@@ -77,10 +76,13 @@ shuffleDiscards:
 		addi $a1,$a1,-1
 		addi $t3,$t3,1
 		jal shiftAllLeft
-		bnez $a1,for1
+		bnez $a1,for3
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
-remainingCards: # Number of remaining cards in $s0
 	
+.globl remainingCards
+remainingCards: # Number of remaining cards in $s0
+
+.globl discard
 discard: # $a0 contains address of first index of discards

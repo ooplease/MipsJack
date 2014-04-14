@@ -1,5 +1,5 @@
 .data
-	hello: .asciiz "Hello World!/n"
+	hello: .asciiz "Hello World!\n"
 .text
 .globl main
 .globl exit
