@@ -1,25 +1,19 @@
 <<<<<<< HEAD
 =======
 .data
-gameInventory:		.word 0,0,0
 chooseGame:		.asciiz "Please Choose which game you would like to play:"
 nextline:		.asciiz "\n"
-Blackjack:		.asciiz "j BlackJack"
-Goldfish:		.asciiz "j GoldFish"
+gameInventory:		.word 0,0,0
 gameNum:		.word 0 
 
 .globl main
 
 main:
-
-	la $t1, gameInventory
-	
-	#setGames
-	lw $t1, BlackJack
+	#Set Games
+	la $t1, BlackJack
+	la $t2, GoldFish
 	sw $t1, gameInventory
-	
-	lw $t2, GoldFish
-	sw $t2, gameInventory
+	sw $t2, gameInventory+4
 
 	#getNum
 	li $v0, 4
@@ -28,15 +22,9 @@ main:
 	
 	li $v0, 5
 	syscall
-	sw $t1, gameNum
-	lw $t1, gameNum
-	sw $t1, ($s0)
+	#Mult integer b4, then add to gameInventory
 	
-Deck:
-
-BlackJack:
-
-GoldFish:
+	
 
 exit:
 	li $v0, 10
