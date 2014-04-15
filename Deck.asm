@@ -10,10 +10,8 @@
 	
 
 .text
-.globl shuffle
-.globl draw
-.globl remainingCards
-	
+
+.globl shuffle	
 shuffle:
 	li $a1,52
 	li $t3,0
@@ -42,6 +40,7 @@ shiftAllLeft: #$a0 is position to start at
 		bnez $t1,while1
 	jr $ra
 	
+.globl draw
 draw: # $a0 contains the address of the hand where cards will be placed, $a1 contains the # of cards to draw
 	addi $sp,$sp,-4
 	sw $ra,($sp)
@@ -72,7 +71,11 @@ shuffleDiscards:
 	li $t3,0
 	addi $sp,$sp,-4
 	sw $ra,($sp)
+<<<<<<< HEAD
 	for4:
+=======
+	for3:
+>>>>>>> 7ae6bfe4bc4dbb27c8c2c3305c24bfaad550a572
 		li $a0,0
 		li $v0,42
 		syscall
@@ -82,12 +85,16 @@ shuffleDiscards:
 		addi $a1,$a1,-1
 		addi $t3,$t3,1
 		jal shiftAllLeft
+<<<<<<< HEAD
 		bnez $a1,for4
+=======
+		bnez $a1,for3
+>>>>>>> 7ae6bfe4bc4dbb27c8c2c3305c24bfaad550a572
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
-remainingCards: # Number of remaining cards in $s0
 	
+<<<<<<< HEAD
 discard: # $a0 contains address of first index of discards
 
 printCard: # $a0 contains the address of a string containing chars A 2 3 4 5 6 7 8 9 1 J Q or K
@@ -103,3 +110,10 @@ printCard: # $a0 contains the address of a string containing chars A 2 3 4 5 6 7
 	for5:
 		
 	
+=======
+.globl remainingCards
+remainingCards: # Number of remaining cards in $s0
+
+.globl discard
+discard: # $a0 contains address of first index of discards
+>>>>>>> 7ae6bfe4bc4dbb27c8c2c3305c24bfaad550a572
