@@ -4,6 +4,10 @@
 	shuffledDeck: .asciiz "----------------------------------------------------"
 	discardPile:  .asciiz "----------------------------------------------------"
 	cardsLeft: .word 52
+	cardTop: .asciiz "-----\n|   |\n"
+	cardLeft: .asciiz "|"
+	cardRightAndBottom: .asciiz "|\n|   |\n-----"
+	
 
 .text
 .globl shuffle
@@ -43,16 +47,17 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 	sw $ra,($sp)
 	la $t0,shuffledDeck
 	lw $t2,cardsLeft
-	blt $t2,$a1,error1
+	#blt $t2,$a1,error1
 	for2:
 		beqz $a1,endfor2 #check condition
 		lb $t1,($t0)
 		sb $t1,($a0)
 		addi $t0,$t0,1
 		addi $a0,$a0,1
+		addi $a1,$a1,-1
 		j for2
 	endfor2:
-	lw $ra,(sp)
+	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
 
@@ -67,7 +72,7 @@ shuffleDiscards:
 	li $t3,0
 	addi $sp,$sp,-4
 	sw $ra,($sp)
-	for1:
+	for4:
 		li $a0,0
 		li $v0,42
 		syscall
@@ -77,10 +82,24 @@ shuffleDiscards:
 		addi $a1,$a1,-1
 		addi $t3,$t3,1
 		jal shiftAllLeft
-		bnez $a1,for1
+		bnez $a1,for4
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
 remainingCards: # Number of remaining cards in $s0
 	
 discard: # $a0 contains address of first index of discards
+
+printCard: # $a0 contains the address of a string containing chars A 2 3 4 5 6 7 8 9 1 J Q or K
+	move $t0,$a0
+	li $t2,0 # t2 contains total cards after count2
+	count2:
+		lb $t1,($t0)
+		beqz $t1,endcount
+		addi $t2,$t2,1
+		addi $t0,$t0,1
+	endcount2:
+	move $t3,$t2
+	for5:
+		
+	
