@@ -85,4 +85,5 @@ shuffleDiscards:
 remainingCards: # Number of remaining cards in $s0
 
 .globl discard
-discard: # $a0 contains address of first index of discards
+discard: # $a0 contains address of first index of discards $a1 contains the # of cards to discard
+	
