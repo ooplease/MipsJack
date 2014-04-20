@@ -2,7 +2,7 @@
 chooseGame:		.asciiz "Please Choose which game you would like to play:\n0 - Black Jack\n1 - Go Fish\n2 - Exit\n"
 nextline:		.asciiz "\n"
 gameInventory:		.word 0,0,0
-gameNum:		.word 0 
+gameNum:		.word 0
 
 .text
 .globl main

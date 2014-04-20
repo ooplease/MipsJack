@@ -4,9 +4,13 @@
 	shuffledDeck: .asciiz "----------------------------------------------------"
 	discardPile:  .asciiz "----------------------------------------------------"
 	cardsLeft: .word 52
-	cardTop: .asciiz "-----\n|   |\n"
-	cardLeft: .asciiz "|"
-	cardRightAndBottom: .asciiz "|\n|   |\n-----"
+	cardLine1: .asciiz "===== "
+	cardLine2: .asciiz"|   | "
+	cardLine3: .asciiz "|"
+	cardLine4: .asciiz "|   | "
+	cardLine5: .asciiz "===== "
+	newLine: .asciiz "\n"
+	tenText: .asciiz "10 | "
 	
 
 .text
@@ -89,28 +93,93 @@ shuffleDiscards:
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
-.globl discard	
-discard: # $a0 contains address of first index of discards
-
-printCard: # $a0 contains the address of a string containing chars A 2 3 4 5 6 7 8 9 1 J Q or K
+	
+.globl printCards
+printCards: # $a0 contains the address of a string containing chars A 2 3 4 5 6 7 8 9 1 J Q or K
 	move $t0,$a0
+	move $s3,$a0
 	li $t2,0 # t2 contains total cards after count2
 	count2:
 		lb $t1,($t0)
-		beqz $t1,endcount
+		beqz $t1,endcount2
 		addi $t2,$t2,1
 		addi $t0,$t0,1
+		b count2
 	endcount2:
 	move $t3,$t2
+	li $v0,4
+	la $a0,cardLine1
+	la $s0,endLoop5_1
+	la $t7,cardLine3
 	for5:
+		beqz $t3,jumptos0
+		syscall
+		addi $t3,$t3,-1
 		
-	
+		beq $a0,$t7,printVal
+		b for5
+		printVal:
+			lb $t6,($s3)
+			addi $s3,$s3,1
+			bne $t6,'1',endif5
+			if5:
+				la $a0,tenText
+				syscall
+				move $a0,$t7
+				b for5
+			endif5:
+			li $v0,11
+			li $a0,' '
+			syscall
+			move $a0,$t6
+			syscall
+			li $a0,' '
+			syscall
+			li $v0,4
+			la $a0,cardLine3
+			syscall
+			li $v0,11
+			li $a0,' '
+			syscall
+			li $v0,4
+			move $a0,$t7
+			b for5
+		jumptos0:
+			jr $s0
+	endLoop5_1:
+	move $t3,$t2
+	la $a0,newLine
+	syscall
+	la $a0,cardLine2
+	la $s0,endLoop5_2
+	b for5
+	endLoop5_2:
+	move $t3,$t2
+	la $a0,newLine
+	syscall
+	la $a0,cardLine3
+	la $s0,endLoop5_3
+	b for5
+	endLoop5_3:
+	move $t3,$t2
+	la $a0,newLine
+	syscall
+	la $a0,cardLine4
+	la $s0,endLoop5_4
+	b for5
+	endLoop5_4:
+	move $t3,$t2
+	la $a0,newLine
+	syscall
+	la $a0,cardLine5
+	la $s0,endLoop5_5
+	b for5
+	endLoop5_5:
+	la $a0,newLine
+	syscall
+	jr $ra
 .globl remainingCards
 remainingCards: # Number of remaining cards in $s0
-<<<<<<< HEAD
 
 .globl discard
 discard: # $a0 contains address of first index of discards $a1 contains the # of cards to discard
-	
-=======
->>>>>>> 58144fd2ceeca9f0f8197a5f7ce9ea64366a8eeb
