@@ -9,19 +9,19 @@ deck:			.asciiz "Deck:\n"
 
 .text
 .globl main
+.globl mainMenu
 
 main:
-	jal deckTest
-	j exit
 	
 	#Set Games
-	la $t1, blackJack
-	#la $t2, GoldFish
+	la $t1,blackJack
+	la $t2,goFish
 	la $t3,exit
-	sw $t1, gameInventory
-	#sw $t2, gameInventory+4
+	sw $t1,gameInventory
+	sw $t2,gameInventory+4
 	sw $t3,gameInventory+8
 
+mainMenu:
 	#getNum
 	li $v0, 4
 	la $a0, chooseGame
@@ -32,10 +32,9 @@ main:
 	#Mult integer b4, then add to gameInventory
 	
 	mul $t0,$v0,4
-	la $t5,gameInventory
-	add $t0,$t5,$t0
+	lw $t5,gameInventory($t0)
 	
-	jalr $t0
+	jalr $t5
 
 exit:
 	li $v0, 10

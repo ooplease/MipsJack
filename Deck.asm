@@ -12,6 +12,9 @@
 	newLine: .asciiz "\n"
 	tenText: .asciiz "10 | "
 	
+	untouchedDeck: .asciiz "AAAA222233334444555566667777888899991111JJJJQQQQKKKK"
+	emptyDeck: .asciiz "----------------------------------------------------"
+	
 
 .text
 
@@ -59,6 +62,11 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 	sub $t4,$t2,$a1
 	sw $t4,cardsLeft
 	blt $t2,$a1,error1
+	findCorrectSpot:
+		lb $t1,($t3)
+		beq $t1,'-',for2
+		addi $t3,$t3,1
+		b findCorrectSpot
 	for2:
 		beqz $a1,endfor2 #check condition
 		lb $t1,($t0)
@@ -242,4 +250,30 @@ showDeck:
 	jal printCards
 	lw $ra,($sp)
 	addi $sp,$sp,4
+	jr $ra
+	
+.globl resetDeck
+resetDeck:
+	li $t0,52
+	sw $t0,cardsLeft
+	la $t0,untouchedDeck
+	la $t1,deck
+	while7:
+		lb $t2,($t0)
+		beqz $t2,endloop7
+		sb $t2,($t1)
+		addi $t0,$t0,1
+		addi $t1,$t1,1
+		b while7
+	endloop7:
+	la $t0,emptyDeck
+	la $t1,discardPile
+	while10:
+		lb $t2,($t0)
+		beqz $t2,endloop10
+		sb $t2,($t1)
+		addi $t0,$t0,1
+		addi $t1,$t1,1
+		b while10
+	endloop10:
 	jr $ra
