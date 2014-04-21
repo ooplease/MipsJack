@@ -56,7 +56,9 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 	la $t0,shuffledDeck
 	move $t3,$a0
 	lw $t2,cardsLeft
-	#blt $t2,$a1,error1
+	sub $t4,$t2,$a1
+	sw $t4,cardsLeft
+	blt $t2,$a1,error1
 	for2:
 		beqz $a1,endfor2 #check condition
 		lb $t1,($t0)
@@ -70,32 +72,47 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 	lw $ra,($sp)
 	addi $sp,$sp,4
 	jr $ra
+	error1:
+		move $s5,$a1
+		move $s4,$t0
+		move $s3,$t3
+		jal shuffleDiscards
+		move $a1,$s5
+		move $t0,$s4
+		move $t3,$s3
+		b for2
 
 shuffleDiscards:
-	li $t5,0
+	addi $sp,$sp,-4
+	sw $ra,($sp)
 	la $t6,discardPile
 	counter:
 		lb $t7,($t6)
-		beq $t7,'-',endcount
+		addi $t6,$t6,1
+		beqz $t7,endcount
+		bne $t7,'-',counter
 	endcount:
-	li $a1,52
-	li $t3,0
-	addi $sp,$sp,-4
-	sw $ra,($sp)
-	for4:
+	addi $t6,$t6,-1
+	la $t5,discardPile
+	sub $t5,$t6,$t5
+	move $a1,$t5
+	lw $t3,cardsLeft
+	add $t0,$t3,$t5
+	sw $t0,cardsLeft
+	li $t8,52
+	sub $t3,$t8,$t3
 
 	for3:
-	
 		li $a0,0
 		li $v0,42
 		syscall
-		la $a0,deck($a0)
+		
+		la $a0,discardPile($a0)
 		lb $t2,($a0)
 		sb $t2,shuffledDeck($t3)
 		addi $a1,$a1,-1
 		addi $t3,$t3,1
 		jal shiftAllLeft
-		bnez $a1,for4
 		bnez $a1,for3
 	lw $ra,($sp)
 	addi $sp,$sp,4

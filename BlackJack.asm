@@ -57,3 +57,5 @@ calculateTotal: # $a0 is the address of the hand $s0 will contain the total
 		
 	endwhile4:
 	
+showHands:
+	

@@ -3,7 +3,9 @@ chooseGame:		.asciiz "Please Choose which game you would like to play:\n0 - Blac
 nextline:		.asciiz "\n"
 gameInventory:		.word 0,0,0
 gameNum:		.word 0
-testHand:		.asciiz "-----"
+testHand:		.asciiz "--------------------------------------"
+yourHand:		.asciiz "Player Hand:\n"
+deck:			.asciiz "Deck:\n"
 
 .text
 .globl main
@@ -41,14 +43,57 @@ exit:
 
 deckTest:
 	jal shuffle
+	
+	li $v0,4
+	la $a0,deck
+	syscall
+	
 	jal showDeck
 	
-	li $a1,5
+	li $a1,30
 	la $a0,testHand
 	jal draw
+	
+	li $v0,4
+	la $a0,yourHand
+	syscall
 	
 	la $a0,testHand
 	jal printCards
 	
+	li $v0,4
+	la $a0,deck
+	syscall
 	jal showDeck
+	
+	la $a0,testHand
+	li $a1, 26
+	jal discard
+	
+	li $v0,4
+	la $a0,yourHand
+	syscall
+	la $a0,testHand
+	jal printCards
+	
+	li $v0,4
+	la $a0,deck
+	syscall
+	jal showDeck
+	
+	li $a1,25
+	la $a0,testHand
+	jal draw
+	
+	li $v0,4
+	la $a0,yourHand
+	syscall
+	la $a0,testHand
+	jal printCards
+	
+	li $v0,4
+	la $a0,deck
+	syscall
+	jal showDeck
+	
 	j exit
