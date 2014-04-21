@@ -18,7 +18,7 @@
 .globl shuffle	
 shuffle:
 	li $a1,52
-	li $t3,0
+	li $t7,0
 	addi $sp,$sp,-4
 	sw $ra,($sp)
 	for1:
@@ -27,9 +27,9 @@ shuffle:
 		syscall
 		la $a0,deck($a0)
 		lb $t2,($a0)
-		sb $t2,shuffledDeck($t3)
+		sb $t2,shuffledDeck($t7)
 		addi $a1,$a1,-1
-		addi $t3,$t3,1
+		addi $t7,$t7,1
 		jal shiftAllLeft
 		bnez $a1,for1
 	lw $ra,($sp)
@@ -37,11 +37,16 @@ shuffle:
 	jr $ra
 		
 shiftAllLeft: #$a0 is position to start at
+	move $t9,$a0
 	while1:
-		lb $t1,1($a0)
-		sb $t1,($a0)
-		addi $a0,$a0,1
-		bnez $t1,while1
+		lb $t1,1($t9)
+		beqz $t1,endWhile1
+		sb $t1,($t9)
+		addi $t9,$t9,1
+		b while1
+	endWhile1:
+	li $t1,'-'
+	sb $t1,($t9)
 	jr $ra
 	
 .globl draw
@@ -49,14 +54,16 @@ draw: # $a0 contains the address of the hand where cards will be placed, $a1 con
 	addi $sp,$sp,-4
 	sw $ra,($sp)
 	la $t0,shuffledDeck
+	move $t3,$a0
 	lw $t2,cardsLeft
 	#blt $t2,$a1,error1
 	for2:
 		beqz $a1,endfor2 #check condition
 		lb $t1,($t0)
-		sb $t1,($a0)
-		addi $t0,$t0,1
-		addi $a0,$a0,1
+		sb $t1,($t3)
+		move $a0,$t0
+		jal shiftAllLeft
+		addi $t3,$t3,1
 		addi $a1,$a1,-1
 		j for2
 	endfor2:
@@ -102,6 +109,7 @@ printCards: # $a0 contains the address of a string containing chars A 2 3 4 5 6 
 	count2:
 		lb $t1,($t0)
 		beqz $t1,endcount2
+		beq $t1,'-',endcount2
 		addi $t2,$t2,1
 		addi $t0,$t0,1
 		b count2
@@ -183,3 +191,38 @@ remainingCards: # Number of remaining cards in $s0
 
 .globl discard
 discard: # $a0 contains address of first index of discards $a1 contains the # of cards to discard
+	# find first empty spot in discardPile
+	addi $sp,$sp,-4
+	sw $ra,($sp)
+	addi $a1,$a1,-1
+	la $t0,discardPile
+	probe1:
+		lb $t1,($t0)
+		beq $t1,'-',endProbe1
+		addi $t0,$t0,1
+		b probe1
+	endProbe1:
+		lb $t1,($a0)
+		beq $t1,'-',endloop6
+		beqz $t1,endloop6
+		sb $t1,($t0)
+		jal shiftAllLeft
+		beqz $a1,endloop6
+		addi $t0,$t0,1
+		addi $a1,$a1,-1
+		b endProbe1
+	endloop6:
+	
+	lw $ra,($sp)
+	addi $sp,$sp,4
+	jr $ra
+
+.globl showDeck
+showDeck:
+	addi $sp,$sp,-4
+	sw $ra,($sp)
+	la $a0,shuffledDeck
+	jal printCards
+	lw $ra,($sp)
+	addi $sp,$sp,4
+	jr $ra
